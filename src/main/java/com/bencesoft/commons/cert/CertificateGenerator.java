@@ -44,12 +44,12 @@ public class CertificateGenerator {
     private final String location = "";
 
     public void generate() throws CertificateGeneratorException {
-        final String[] validatedKeystorePath = getValidKeystorePath();
+        final String[] validatedKeyStorePath = getValidKeyStorePath();
         final StringBuilder keytoolOutput = new StringBuilder();
         var exitCode = 0;
         try {
             deleteCertFileIfExists();
-            final Process keytoolProcess = getKeytoolProcess(validatedKeystorePath);
+            final Process keytoolProcess = getKeytoolProcess(validatedKeyStorePath);
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(keytoolProcess.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -65,12 +65,13 @@ public class CertificateGenerator {
         }
         System.out.println("----------------------------------------------------------------------------------------");
         System.out.println(keytoolOutput);
+        System.out.println("Certificate directory: " + keyStorePath);
         System.out.println("----------------------------------------------------------------------------------------");
     }
 
-    private Process getKeytoolProcess(String[] validatedKeystorePath) throws IOException {
-        final var keystoreFileName = validatedKeystorePath[validatedKeystorePath.length - 1];
-        final var keystoreDirectory = Paths.get(String.join(DEFAULT_SEPARATOR, Arrays.copyOf(validatedKeystorePath, validatedKeystorePath.length - 1))).toFile();
+    private Process getKeytoolProcess(String[] validatedKeyStorePath) throws IOException {
+        final var keyStoreFileName = validatedKeyStorePath[validatedKeyStorePath.length - 1];
+        final var keyStoreDirectory = Paths.get(String.join(DEFAULT_SEPARATOR, Arrays.copyOf(validatedKeyStorePath, validatedKeyStorePath.length - 1))).toFile();
         final var csr = "CN=" + commonName + "O=" + organization + "C=" + country + "L=" + location + "ST=" + state;
         final String[] command = {
             "keytool",
@@ -78,14 +79,14 @@ public class CertificateGenerator {
             "-alias", keyAlias,
             "-keyalg", keyAlg,
             "-keysize", String.valueOf(keySize),
-            "-keystore", keystoreFileName,
+            "-keystore", keyStoreFileName,
             "-storetype", keyStoreType,
             "-storepass", keyStorePassword,
             "-validity", String.valueOf(keyValidityDays),
             "-dname", csr
         };
         final var processBuilder = new ProcessBuilder(command);
-        processBuilder.directory(keystoreDirectory);
+        processBuilder.directory(keyStoreDirectory);
         processBuilder.redirectErrorStream(true);
         return processBuilder.start();
     }
@@ -95,7 +96,7 @@ public class CertificateGenerator {
         Files.deleteIfExists(certFile);
     }
 
-    private String[] getValidKeystorePath() {
+    private String[] getValidKeyStorePath() {
         final var keyStorePathTokens = keyStorePath.split(DEFAULT_SEPARATOR);
         if (keyStorePathTokens.length == 0 || !Objects.equals(keyStorePathTokens[0], ROOT_FOLDER) || !keyStorePathTokens[keyStorePathTokens.length - 1].matches(".+\\..+")) {
             throw new CertificateGeneratorException("Keystore path is invalid: " + keyStorePath);
