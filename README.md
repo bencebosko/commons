@@ -39,7 +39,7 @@ The package contains **configurable** bean validations for **validating Java obj
     * `allowUppercase() default false`
     * `allowedSpecialChars() default "_."`
       
-### Examples
+
 Here is an example for validating a _Patch_ request in a REST controller. Since we might update only specific fields, the validations should allow `null` values.
 ```
 public class UserPatchRequest {
@@ -64,3 +64,25 @@ public ResponseEntity<UserResponse> patchUser(Long userId, @RequestBody @Validat
 }
 ```
 
+## Objects (com.bencesoft.commons.object)
+
+The package contains utility functions related to **objects**.
+
+* **ObjectMerger**: a utility class for merging objects of the same type. Useful for partial updates.
+
+Here we overwrite all fields of the target object with the non-null fields of the source object:
+```
+var copyNulls = false;
+var target = User.builder()
+    .id(1L)
+    .email("targetEmail")
+    .password("targetPassword")
+    .build();
+var source = User.builder()
+    .id(null)
+    .email("sourceEmail")
+    .password("sourcePassword")
+    .build();
+...
+var merged = objectMerger.mergeInto(target, source, User.class, copyNulls);
+```
