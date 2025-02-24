@@ -5,7 +5,8 @@ Supported versions: **Java 11+** (the _certificate_ package need **JDK** in orde
 
 Run `mvn clean package` to generate the jar file.
 
-## Validation (com.bencesoft.commons.validation)
+## Validation package 
+### com.bencesoft.commons.validation
 
 The package contains **configurable** bean validations for **validating Java objects using annotations**. The validations have default options which can be set manually. Currently supported validations with their options:
 
@@ -64,7 +65,8 @@ public ResponseEntity<UserResponse> patchUser(Long userId, @RequestBody @Validat
 }
 ```
 
-## Objects (com.bencesoft.commons.object)
+## Objects package
+### com.bencesoft.commons.object
 
 The package contains utility functions related to **objects**.
 
