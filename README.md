@@ -1,7 +1,9 @@
 ## Introduction
-* This library contains several packages which can be useful while building web services.
-* Supported versions: **Java 11+** (the _certificate_ package need **JDK** in order to work)
-* Run `mvn clean package` to generate the jar file
+This library contains several packages which can be useful while building web services.
+
+Supported versions: **Java 11+** (the _certificate_ package need **JDK** in order to work)
+
+Run `mvn clean package` to generate the jar file.
 
 ## Validation (com.bencesoft.commons.validation)
 
