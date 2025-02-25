@@ -100,12 +100,10 @@ We can generate a certificate by building a CertificateGenerator likes this:
 
 ```
 var certificateGenerator = CertificateGenerator.builder()
-    .keyStorePath("src/test/resources/cert/keystore.p12")
+    .keyStorePath("src/main/resources/cert/keystore.p12")
     .keyStoreType("PKCS12")
     .keyStorePassword("password")
     .keyAlias("cert-key")
-    .keyAlg("RSA")
-    .keySize(2048)
     .keyValidityDays(365)
     .commonName("bencesoft.com")
     .organization("bencesoft")
