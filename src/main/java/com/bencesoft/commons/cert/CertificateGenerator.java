@@ -49,7 +49,7 @@ public class CertificateGenerator {
         var exitCode = 0;
         try {
             deleteCertFileIfExists();
-            final Process keytoolProcess = getKeytoolProcess(validatedKeyStorePath);
+            final Process keytoolProcess = startKeytoolProcess(validatedKeyStorePath);
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(keytoolProcess.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -69,7 +69,7 @@ public class CertificateGenerator {
         System.out.println("----------------------------------------------------------------------------------------");
     }
 
-    private Process getKeytoolProcess(String[] validatedKeyStorePath) throws IOException {
+    private Process startKeytoolProcess(String[] validatedKeyStorePath) throws IOException {
         final var keyStoreFileName = validatedKeyStorePath[validatedKeyStorePath.length - 1];
         final var keyStoreDirectory = Paths.get(String.join(DEFAULT_SEPARATOR, Arrays.copyOf(validatedKeyStorePath, validatedKeyStorePath.length - 1))).toFile();
         final var csr = "CN=" + commonName + "O=" + organization + "C=" + country + "L=" + location + "ST=" + state;
@@ -97,8 +97,11 @@ public class CertificateGenerator {
     }
 
     private String[] getValidKeyStorePath() {
+        if (Objects.isNull(keyStorePath) || keyStorePath.isBlank()) {
+            throw new CertificateGeneratorException("Keystore path is empty.");
+        }
         final var keyStorePathTokens = keyStorePath.split(DEFAULT_SEPARATOR);
-        if (keyStorePathTokens.length == 0 || !Objects.equals(keyStorePathTokens[0], ROOT_FOLDER) || !keyStorePathTokens[keyStorePathTokens.length - 1].matches(".+\\..+")) {
+        if (!Objects.equals(keyStorePathTokens[0], ROOT_FOLDER) || !keyStorePathTokens[keyStorePathTokens.length - 1].matches(".+\\..+")) {
             throw new CertificateGeneratorException("Keystore path is invalid: " + keyStorePath);
         }
         return keyStorePathTokens;
